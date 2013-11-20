@@ -12,12 +12,6 @@ SIM = function (scope) {
     
     var particles = [];
     
-    Number.prototype.clamp = function(min, max) {
-        return Math.min(Math.max(this, min), max);
-    };
-    Math.randomInt = function randomInt(min, max) {
-        return Math.round(((max - min) * Math.random()) + min);
-    }
     function randomX() {
         return Math.randomInt(0, scope.config.width);
     }
