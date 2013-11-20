@@ -1,7 +1,7 @@
 /*
  * Loads of ideas and code stolen from Codeflow.
  *
- * URL: 
+ * URL: http://codeflow.org/entries/2010/nov/29/verlet-collision-with-impulse-preservation/
  * 
  * Sheesh, that dude is so much smarter than I am.
  */
