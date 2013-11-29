@@ -17,63 +17,69 @@ var Body = function(x, y, radius){
     self.ay = 0;
     self.radius = radius;
     self.maxAcc = 1;
-    
-    self.stop = function () {
-        self.px = self.x;
-        self.py = self.y;
-        self.ax = 0;
-        self.ay = 0;
-    }
-    
-    self.flee = function (x, y) {
-        // TODO: Run away from the given point.
-    }
-    
-    self.seek = function (x, y) {
-        // TODO: Move toward the given point.
-    }
-    
-    self.wander = function () {
-        // TODO: Wander aimlessly.
-    }
-    
-    function steer() {
-        var range = self.maxAcc,
-            min   = range * -1,
-            max   = range;
-        self.ax = Math.randomInt(min, max);
-        self.ay = Math.randomInt(min, max);
-    }
-
-    function accelerate(delta) {
-        self.x += self.ax * delta * delta
-        self.y += self.ay * delta * delta;
-        self.ax = 0;
-        self.ay = 0;
-    }
-    
-    function inertia(delta) {
-        var x = self.x*2 - self.px;
-        var y = self.y*2 - self.py;
-        self.px = self.x;
-        self.py = self.y;
-        self.x = x;
-        self.y = y;
-    }
-    
-    self.draw = function (ctx) {
-        ctx.fillStyle = self.color;
-        ctx.beginPath();
-        ctx.arc(self.x, self.y, self.radius, 0, Math.PI*2, false);
-        ctx.fill();
-    }
-    
-    self.tick = function (ctx) {
-        var step = 8,
-            step = 1/step;
-        
-        steer();
-        accelerate(step);
-        inertia(step);
-    }
 };
+
+// ---------
+// Steering Behaviors
+// ---------
+Body.prototype.flee = function () {
+    // TODO
+}
+
+Body.prototype.seek = function () {
+    // TODO
+}
+
+Body.prototype.wander = function () {
+    var range = this.maxAcc,
+        min   = range * -1,
+        max   = range;
+    this.ax = Math.randomInt(min, max);
+    this.ay = Math.randomInt(min, max);
+}
+
+// ---------
+// Physics
+// ---------
+Body.prototype.accelerate = function (delta) {
+    this.x += this.ax * delta * delta
+    this.y += this.ay * delta * delta;
+    this.ax = 0;
+    this.ay = 0;
+}
+
+Body.prototype.stop = function () {
+    this.px = this.x;
+    this.py = this.y;
+    this.ax = 0;
+    this.ay = 0;
+}
+
+Body.prototype.inertia = function (delta) {
+    var x = this.x*2 - this.px;
+    var y = this.y*2 - this.py;
+    this.px = this.x;
+    this.py = this.y;
+    this.x = x;
+    this.y = y;
+}
+
+// ---------
+// Step / Update
+// ---------
+
+Body.prototype.draw = function (ctx) {
+    ctx.fillStyle = this.color;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2, false);
+    ctx.fill();
+}
+
+Body.prototype.tick = function () {
+    var step = 8,
+        step = 1/step;
+    
+    this.wander();
+    this.accelerate(step);
+    this.inertia(step);
+}
