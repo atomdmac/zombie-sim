@@ -16,9 +16,29 @@ var Body = function(x, y, radius){
     self.ax = 0;
     self.ay = 0;
     self.radius = radius;
+    self.maxAcc = 1;
+    
+    self.stop = function () {
+        self.px = self.x;
+        self.py = self.y;
+        self.ax = 0;
+        self.ay = 0;
+    }
+    
+    self.flee = function (x, y) {
+        // TODO: Run away from the given point.
+    }
+    
+    self.seek = function (x, y) {
+        // TODO: Move toward the given point.
+    }
+    
+    self.wander = function () {
+        // TODO: Wander aimlessly.
+    }
     
     function steer() {
-        var range = 1,
+        var range = self.maxAcc,
             min   = range * -1,
             max   = range;
         self.ax = Math.randomInt(min, max);
@@ -26,7 +46,7 @@ var Body = function(x, y, radius){
     }
 
     function accelerate(delta) {
-        self.x += self.ax * delta * delta;
+        self.x += self.ax * delta * delta
         self.y += self.ay * delta * delta;
         self.ax = 0;
         self.ay = 0;
@@ -41,7 +61,7 @@ var Body = function(x, y, radius){
         self.y = y;
     }
     
-    this.draw = function (ctx) {
+    self.draw = function (ctx) {
         ctx.fillStyle = self.color;
         ctx.beginPath();
         ctx.arc(self.x, self.y, self.radius, 0, Math.PI*2, false);
