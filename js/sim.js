@@ -58,7 +58,7 @@ SIM = function (scope) {
                     
                     // TODO: This is an experiment.
                     // var tmp = body1.color;
-                    body1.color = body2.color;
+                    // body1.color = body2.color;
                     // body2.color = tmp;
                     
                     // Prevent acceleration?
@@ -112,7 +112,7 @@ SIM = function (scope) {
             
             // console.log(r, " ", x, " ", y);
             
-            scope.bodies.push(new Body(x, y, r));
+            scope.bodies.push(new Body({"x": x, "y": y, "radius":r}));
         }
         
        // TODO: This is messy.  Find a better hueristic to determine how many collide() iterations we need.
