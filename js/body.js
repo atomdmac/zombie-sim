@@ -6,17 +6,24 @@
  * Sheesh, that dude is so much smarter than I am.
  */
 
-var Body = function(x, y, radius){
-    var self = this;
-    self.color = "#ccc";
-    self.x = x;
-    self.y = y;
-    self.px = x;
-    self.py = y;
-    self.ax = 0;
-    self.ay = 0;
-    self.radius = radius;
-    self.maxAcc = 1;
+var Body = function Body (config){
+    this.initBody(config);
+};
+
+// ---------
+// Properties
+// ---------
+Body.prototype.initBody = function (config) {
+    config = config || {};
+    this.color  = config.color || "#ccc";
+    this.x      = config.x || 0;
+    this.y      = config.y || 0;
+    this.px     = this.x;
+    this.py     = this.y;
+    this.ax     = config.ax || 0;
+    this.ay     = config.ay || 0;
+    this.radius = config.radius || 5;
+    this.maxAcc = config.maxAcc || 1;
 };
 
 // ---------
