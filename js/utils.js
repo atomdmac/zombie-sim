@@ -17,6 +17,11 @@ Math.randomInt = function (min, max) {
     return Math.round((max - min) * Math.random() + min);
 };
 
+// Thanks, numerous posts on the Internet!
+Math.randomFloat = function (min, max) {
+    return (max - min) * Math.random() + min;
+};
+
 // Thanks, Paul Irish: http://www.paulirish.com/2009/random-hex-color-code-snippets/
 Math.randomColor = function () {
     return '#'+Math.floor(Math.random()*16777215).toString(16);
