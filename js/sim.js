@@ -5,6 +5,12 @@ SIM = function (scope) {
         height: 500
     };
     
+    scope.stats = {
+        alive: 0,
+        undead: 0,
+        dead: 0,
+        collisions: 0
+    }
     scope.bodies = [];
     scope.isRunning = false;
     scope.canvas = null;
@@ -80,12 +86,28 @@ SIM = function (scope) {
                             scope.config.width,
                             scope.config.height);
         
+        scope.stats.alive = 0;
+        scope.stats.undead = 0;
+        scope.stats.dead = 0;
+        scope.stats.collisions = 0;
+        
         var i, len = scope.bodies.length;
         for(i=0; i<len; i++) {
             scope.bodies[i].tick();
         }
-        collide();
+        scope.stats.collisions = collide();
         for(i=0; i<len; i++) {
+            switch (scope.bodies[i].status) {
+                case Human.ALIVE:
+                    scope.stats.alive++;
+                    break;
+                case Human.UNDEAD:
+                    scope.stats.undead++;
+                    break;
+                case Human.DEAD:
+                    scope.stats.dead++;
+                    break;
+            }
             scope.bodies[i].draw(scope.ctx);
         }
         
