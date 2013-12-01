@@ -4,10 +4,6 @@ var Human = Body.extend({
     
     init: function (config) {
         this._super(config);
-        this.stats = {
-            "defense": 10,
-            "attack" : 10
-        };
         this.status = config.status || Human.ALIVE;
         this.applyStatus();
     },
@@ -15,7 +11,6 @@ var Human = Body.extend({
     // ---------
     // Update
     // ---------
-    
     tick: function () {
         if (this.status < Human.DEAD) {
             this._super();
@@ -32,13 +27,15 @@ var Human = Body.extend({
             return true;
         }
     },
+    
     attack: function (target){
         if (target.status == Human.DEAD) {
-            return
+            return;
         }
         var attack = Math.randomFloat(0, this.stats.attack);
         target.defend(this, attack);
     },
+    
     defend: function (attacker, strength) {
         var defense = Math.randomFloat(0, this.stats.defense);
         if (defense < strength) {
@@ -60,12 +57,15 @@ var Human = Body.extend({
         switch (this.status) {
             case Human.ALIVE:
                 this.color = "blue";
+                this.stats = Human.ALIVE_STATS;
                 break;
             case Human.UNDEAD:
                 this.color = "red";
+                this.stats = Human.UNDEAD_STATS;
                 break;
             case Human.DEAD:
                 this.color = "#eee";
+                this.stats = Human.DEAD_STATS;
                 break;
         }
     }
@@ -77,3 +77,18 @@ var Human = Body.extend({
 Human.ALIVE  = 0;
 Human.UNDEAD = 1;
 Human.DEAD   = 2;
+
+Human.ALIVE_STATS = {
+    "defense": 8,
+    "attack" : 12
+};
+
+Human.UNDEAD_STATS = {
+    "defense": 4,
+    "attack": 6
+};
+
+Human.DEAD_STATS = {
+    "defense": 0,
+    "attack": 0
+};
