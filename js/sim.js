@@ -56,6 +56,9 @@ SIM = function (scope) {
                     
                     collisions++;
                     
+                    // Combat!
+                    if(body1.isHostel(body2)) body1.attack(body2);
+                    
                     // TODO: This is an experiment.
                     // var tmp = body1.color;
                     // body1.color = body2.color;
@@ -105,6 +108,18 @@ SIM = function (scope) {
         // Create test bodies.
         var x, y, r;
         var padding = 10;
+        // Undead
+        for(var i=0; i<10; i++) {
+            r = Math.randomInt(3, 5);
+            x = randomX().clamp(r, scope.config.width  - r);
+            y = randomY().clamp(r, scope.config.height - r);
+            
+            // console.log(r, " ", x, " ", y);
+            
+            scope.bodies.push(new Human({"x": x, "y": y, "radius":r, status: Human.UNDEAD}));
+        }
+        
+        // Humans
         for(var i=0; i<500; i++) {
             r = Math.randomInt(3, 5);
             x = randomX().clamp(r, scope.config.width  - r);
@@ -112,15 +127,15 @@ SIM = function (scope) {
             
             // console.log(r, " ", x, " ", y);
             
-            scope.bodies.push(new Body({"x": x, "y": y, "radius":r}));
+            scope.bodies.push(new Human({"x": x, "y": y, "radius":r}));
         }
         
        // TODO: This is messy.  Find a better hueristic to determine how many collide() iterations we need.
         var numCollisions = 1,
-            safety = 100, safetyCount = 0;
+            safety = 10, safetyCount = 0;
         while(numCollisions > 0) {
             numCollisions = collide(true);
-            console.log("cols: ", numCollisions);
+            // console.log("cols: ", numCollisions);
             safetyCount++;
             if (safetyCount > safety) {
                 console.log("breaking");
