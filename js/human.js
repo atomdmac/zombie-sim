@@ -1,10 +1,75 @@
-var Human = function (config) {
-    // Initialize Body "super-class".
-    this.initBody(config);
+var Human = Body.extend({
+    stats: null,
+    status: null,
     
-    // Init Human "class".
-    this.initHuman(config);
-};
+    init: function (config) {
+        this._super(config);
+        this.stats = {
+            "defense": 10,
+            "attack" : 10
+        };
+        this.status = config.status || Human.ALIVE;
+        this.applyStatus();
+    },
+    
+    // ---------
+    // Update
+    // ---------
+    
+    tick: function () {
+        if (this.status < Human.DEAD) {
+            this._super();
+        }
+    },
+    
+    // ---------
+    // Combat
+    // ---------
+    isHostel: function (target) {
+        if (target.status == this.status) {
+            return false;
+        } else {
+            return true;
+        }
+    },
+    attack: function (target){
+        if (target.status == Human.DEAD) {
+            return
+        }
+        var attack = Math.randomFloat(0, this.stats.attack);
+        target.defend(this, attack);
+    },
+    defend: function (attacker, strength) {
+        var defense = Math.randomFloat(0, this.stats.defense);
+        if (defense < strength) {
+            this.die();
+        }
+    },
+    
+    // ---------
+    // Status
+    // ---------
+    die: function () {
+        if (this.status !== Human.DEAD) {
+            this.status++;
+        }
+        this.applyStatus();
+    },
+    
+    applyStatus: function () {
+        switch (this.status) {
+            case Human.ALIVE:
+                this.color = "blue";
+                break;
+            case Human.UNDEAD:
+                this.color = "red";
+                break;
+            case Human.DEAD:
+                this.color = "#eee";
+                break;
+        }
+    }
+});
 
 // ---------
 // Constants
@@ -12,52 +77,3 @@ var Human = function (config) {
 Human.ALIVE  = 0;
 Human.UNDEAD = 1;
 Human.DEAD   = 2;
-
-// ---------
-// Initialization
-// ---------
-Human.prototype = Body.prototype;
-Human.prototype.initHuman = function (config) {
-    // Combat stats.
-    this.stats = {
-        defense: 10,
-        attack: 10
-    }
-    
-    // Possible values:
-    // 0 = Alive
-    // 1 = Undead
-    // 2 = Dead
-    this.status = config.status || 0;
-}
-
-// ---------
-// Combat
-// ---------
-Human.prototype.attack = function (target) {
-    var attack = Math.randomFloat(0, this.stats.attack);
-    target.defend(this, attack);
-};
-
-Human.prototype.defend = function (attacker, strength) {
-    var defemse = Math.randomFloat(0, this.stats.defense);
-    if (defend < strength) {
-        this.die();
-    }
-};
-
-// ---------
-// State/Status Change
-// ---------
-Human.prototype.die = function () {
-    this.status++;
-    switch (this.status) {
-        // Undead
-        case Human.UNDEAD:
-            this.color = "#00ff00";
-            break;
-        // Dead
-        case Human.DEAD:
-            this.color = "#000";
-    }
-}
