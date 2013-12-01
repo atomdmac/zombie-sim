@@ -76,15 +76,32 @@ SIM = function (scope) {
                         body2.stop();
                     }
                 }
+                
+                // Can these guys see each other?
+                if (Math.abs(length) < body1.stats.sight) {
+                    console.log(length);
+                    body1.notice(body2);
+                }
+                if (Math.abs(length) < body2.stats.sight) {
+                    body2.notice(body1);                        console.log("noticing!  Plus, I'm already wandering!");
+
+                }
+                
+                /*if (body1.status == Human.UNDEAD && length < body1.stats.sight) {
+                    console.log("UNDEAD!");
+                }*/
             }
+            if(!body1.behavior.seeking && !body1.behavior.fleeing) body1.wander();
         }
         return collisions;
     }
     function tick() {
         console.log("tick");
-        scope.ctx.clearRect(0, 0,
+        /*scope.ctx.clearRect(0, 0,
                             scope.config.width,
-                            scope.config.height);
+                            scope.config.height);*/
+        scope.ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+        scope.ctx.fillRect(0, 0, scope.config.width, scope.config.height);
         
         scope.stats.alive = 0;
         scope.stats.undead = 0;
@@ -131,8 +148,8 @@ SIM = function (scope) {
         var x, y, r;
         var padding = 10;
         // Undead
-        for(var i=0; i<10; i++) {
-            r = Math.randomInt(3, 5);
+        for(var i=0; i<1; i++) {
+            r = Math.randomInt(10, 15);
             x = randomX().clamp(r, scope.config.width  - r);
             y = randomY().clamp(r, scope.config.height - r);
             
@@ -142,8 +159,8 @@ SIM = function (scope) {
         }
         
         // Humans
-        for(var i=0; i<500; i++) {
-            r = Math.randomInt(3, 5);
+        for(i=0; i<30; i++) {
+            r = Math.randomInt(10, 15);
             x = randomX().clamp(r, scope.config.width  - r);
             y = randomY().clamp(r, scope.config.height - r);
             
@@ -154,7 +171,7 @@ SIM = function (scope) {
         
        // TODO: This is messy.  Find a better hueristic to determine how many collide() iterations we need.
         var numCollisions = 1,
-            safety = 10, safetyCount = 0;
+            safety = 2, safetyCount = 0;
         while(numCollisions > 0) {
             numCollisions = collide(true);
             // console.log("cols: ", numCollisions);

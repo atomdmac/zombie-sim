@@ -1,10 +1,16 @@
 var Human = Body.extend({
     stats: null,
     status: null,
+    behavior: null,
     
     init: function (config) {
         this._super(config);
         this.status = config.status || Human.ALIVE;
+        this.behavior = {
+            "seeking": false,
+            "fleeing": false,
+            "wandering": false
+        };
         this.applyStatus();
     },
     
@@ -12,9 +18,69 @@ var Human = Body.extend({
     // Update
     // ---------
     tick: function () {
+        // Reset stats.
+        this.behavior.notices = false;
+        this.behavior.seeking = false;
+        this.behavior.fleeing = false;
+        this.behavior.wandering = false;
+        
         if (this.status < Human.DEAD) {
             this._super();
         }
+    },
+    
+    draw: function (ctx) {
+        this._super(ctx);
+        
+        // Draw sight range.
+        ctx.strokeStyle = "#ccc";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.stats.sight, 0, Math.PI*2, false);
+        ctx.stroke();
+        
+        
+        var badges = "";
+        if (this.behavior.notices)   badges += "N";
+        if (this.behavior.seeking)   badges += "S";
+        if (this.behavior.fleeing)   badges += "F";
+        if (this.behavior.wandering) badges += "W";
+        
+        ctx.font = "normal 8pt Arial";
+        ctx.fillStyle = "white";
+        ctx.fillText(badges, this.x-this.radius, this.y);
+    },
+    
+    // --------
+    // Senses / Input
+    // --------
+    notice: function (target) {
+        this.behavior.notices = true;
+        if (this.status == Human.ALIVE) {
+            if (target.status == Human.UNDEAD) {
+                this.flee(target);
+            }
+        }
+        else if (this.status == Human.UNDEAD) {
+            if (target.status == Human.ALIVE) {
+                this.seek(target);
+            }
+        }
+    },
+    
+    seek: function (target) {
+        this.behavior.seeking = true;
+        this._super(target);
+    },
+    
+    flee: function (target) {
+        this.behavior.fleeing = true;
+        this._super(target);
+    },
+    
+    wander: function () {
+        this.behavior.wandering = true;
+        this._super();
     },
     
     // ---------
@@ -64,7 +130,7 @@ var Human = Body.extend({
                 this.stats = Human.UNDEAD_STATS;
                 break;
             case Human.DEAD:
-                this.color = "#eee";
+                this.color = "#ddd";
                 this.stats = Human.DEAD_STATS;
                 break;
         }
@@ -79,16 +145,31 @@ Human.UNDEAD = 1;
 Human.DEAD   = 2;
 
 Human.ALIVE_STATS = {
-    "defense": 8,
-    "attack" : 12
+    "sight"   : 100,
+    "defense" : 8,
+    "attack"  : 12,
+    "seeking" : false,
+    "fleeing" : false,
+    "wandering": false,
+    "notices"  : false
 };
 
 Human.UNDEAD_STATS = {
-    "defense": 4,
-    "attack": 6
+    "sight"    : 50,
+    "defense"  : 4,
+    "attack"   : 6,
+    "seeking"  : false,
+    "fleeing"  : false,
+    "wandering": false,
+    "notices"  : false
 };
 
 Human.DEAD_STATS = {
-    "defense": 0,
-    "attack": 0
+    "sight"    : 0,
+    "defense"  : 0,
+    "attack"   : 0,
+    "seeking"  : false,
+    "fleeing"  : false,
+    "wandering": false,
+    "notices"  : false
 };

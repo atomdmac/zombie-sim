@@ -26,8 +26,9 @@ var Body = Class.extend({
         this.py     = this.y;
         this.ax     = config.ax || 0;
         this.ay     = config.ay || 0;
-        this.radius = config.radius || 5;
+        this.radius = config.radius || 1;
         this.maxAcc = config.maxAcc || 5;
+        this.maxSpeed = config.maxSpeed || 10;
     },
     
     // ---------
@@ -45,7 +46,6 @@ var Body = Class.extend({
         var step = 8,
             step = 1/step;
         
-        this.wander();
         this.accelerate(step);
         this.inertia(step);
     },
@@ -54,22 +54,38 @@ var Body = Class.extend({
     // Steering Behaviors
     // ---------
     flee: function (target) {
-        // TODO
+        var xd = (target.x - target.x),
+            yd = (this.y - target.y),
+            l = Math.sqrt(xd*xd+yd*yd)
+            x = xd / l,
+            y = yd / l;
+        
+        this.ax += x;
+        this.ay += y;
     },
     
     seek: function (target) {
-        // TODO
+        var xd = (target.x - this.x),
+            yd = (target.y - this.y),
+            l  = Math.sqrt(xd*xd+yd*yd),
+            x  = xd / l,
+            y  = yd / l;
+        this.ax += x;
+        this.ay += y;
     },
     
     wander: function () {
         var range = this.maxAcc,
         min   = range * -1,
         max   = range;
-        this.ax = Math.randomInt(min, max);
-        this.ay = Math.randomInt(min, max);
+        this.ax += Math.randomFloat(min, max);
+        this.ay += Math.randomFloat(min, max);
     },
     
     accelerate: function (delta) {
+        //this.ax = this.ax.clamp(-this.maxAcc, this.maxAcc);
+        //this.ay = this.ay.clamp(-this.maxACc, this.maxAcc);
+        
         this.x += this.ax * delta * delta
         this.y += this.ay * delta * delta;
         this.ax = 0;
@@ -77,8 +93,9 @@ var Body = Class.extend({
     },
     
     inertia: function (delta) {
-        var x = this.x*2 - this.px;
-        var y = this.y*2 - this.py;
+        var x, y;
+        x = this.x*2 - this.px;
+        y = this.y*2 - this.py;
         this.px = this.x;
         this.py = this.y;
         this.x = x;
