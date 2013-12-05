@@ -1,10 +1,12 @@
 var Human = Body.extend({
+    age: null,
     stats: null,
     status: null,
     behavior: null,
     
     init: function (config) {
         this._super(config);
+        this.age    = typeof config.age === "number" ? config.age : 0;
         this.status = config.status || Human.ALIVE;
         this.behavior = {
             "seeking": false,
@@ -18,6 +20,9 @@ var Human = Body.extend({
     // Update
     // ---------
     tick: function () {
+        // Happy birthday.
+        this.age++;
+        
         // Reset stats.
         this.behavior.notices = false;
         this.behavior.seeking = false;
@@ -26,6 +31,8 @@ var Human = Body.extend({
         
         if (this.status < Human.DEAD) {
             this._super();
+        } else if (this.age > 1000) {
+            this.status = Human.ROTTED;
         }
     },
     
@@ -33,6 +40,7 @@ var Human = Body.extend({
         this._super(ctx);
         
         // Draw sight range.
+        /*
         ctx.strokeStyle = "#ccc";
         ctx.lineWidth = 1;
         ctx.beginPath();
@@ -69,6 +77,9 @@ var Human = Body.extend({
         }
     },
     
+    // ---------
+    // Behaviors
+    // ---------
     seek: function (target) {
         this.behavior.seeking = true;
         this._super(target);
@@ -121,9 +132,10 @@ var Human = Body.extend({
     },
     
     applyStatus: function () {
+        this.age = 0;
         switch (this.status) {
             case Human.ALIVE:
-                this.color = "blue";
+                this.color = "green";
                 this.stats = Human.ALIVE_STATS;
                 break;
             case Human.UNDEAD:
@@ -131,7 +143,7 @@ var Human = Body.extend({
                 this.stats = Human.UNDEAD_STATS;
                 break;
             case Human.DEAD:
-                this.color = "#ddd";
+                this.color = "#ccc";
                 this.stats = Human.DEAD_STATS;
                 break;
         }
@@ -144,11 +156,12 @@ var Human = Body.extend({
 Human.ALIVE  = 0;
 Human.UNDEAD = 1;
 Human.DEAD   = 2;
+Human.ROTTED = 3;
 
 Human.ALIVE_STATS = {
     "sight"   : 100,
     "defense" : 8,
-    "attack"  : 12,
+    "attack"  : 8,
     "seeking" : false,
     "fleeing" : false,
     "wandering": false,
@@ -156,9 +169,9 @@ Human.ALIVE_STATS = {
 };
 
 Human.UNDEAD_STATS = {
-    "sight"    : 50,
-    "defense"  : 4,
-    "attack"   : 6,
+    "sight"    : 70,
+    "defense"  : 2,
+    "attack"   : 10,
     "seeking"  : false,
     "fleeing"  : false,
     "wandering": false,

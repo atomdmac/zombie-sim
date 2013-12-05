@@ -24,14 +24,17 @@ SIM = function (scope) {
     function randomY() {
         return Math.randomInt(0, scope.config.height);
     }
-    function collide (preventAccel) {
+    function collide (preventAccel, noImpulse) {
         var bodies     = scope.bodies,
             // Let's keep track of how many collisions happen here.
             collisions = 0;
             preventAccel = preventAccel || false;
+            noImpulse    = noImpulse    || false,
+            damping = 0.1;
             
         for(var i=0, l=bodies.length; i<l; i++){
             var body1 = bodies[i];
+            if (body1.status === Human.ROTTED) continue;
             
             // Outer bounderies
             if (body1.x - body1.radius < 0 ) body1.x = body1.radius;
@@ -43,6 +46,8 @@ SIM = function (scope) {
             // Collide with other bodies.
             for(var j=i+1; j<l; j++){
                 var body2 = bodies[j];
+                if (body2.status === Human.ROTTED) continue;
+                
                 var x = body1.x - body2.x;
                 var y = body1.y - body2.y;
                 var slength = x*x+y*y;
@@ -51,7 +56,12 @@ SIM = function (scope) {
                 
                 // if the spheres are closer
                 // then their radii combined
-                if(length < target){ 
+                if(length < target){
+                    var v1x = body1.x - body1.px;
+                    var v1y = body1.y - body1.py;
+                    var v2x = body2.x - body2.px;
+                    var v2y = body2.y - body2.py;
+                    
                     var factor = (length-target)/length;
                     // move the spheres away from each other
                     // by half the conflicting length
@@ -75,15 +85,29 @@ SIM = function (scope) {
                         body1.stop();
                         body2.stop();
                     }
+                    
+                    if(!noImpulse){
+                        var f1 = (damping*(x*v1x+y*v1y))/slength;
+                        var f2 = (damping*(x*v2x+y*v2y))/slength;
+                        
+                        v1x += f2*x-f1*x;
+                        v2x += f1*x-f2*x;
+                        v1y += f2*y-f1*y;
+                        v2y += f1*y-f2*y;
+                        
+                        body1.px = body1.x - v1x;
+                        body1.py = body1.y - v1y;
+                        body2.px = body2.x - v2x;
+                        body2.py = body2.y - v2y;
+                    }
                 }
                 
                 // Can these guys see each other?
                 if (Math.abs(length) < body1.stats.sight) {
-                    console.log(length);
                     body1.notice(body2);
                 }
                 if (Math.abs(length) < body2.stats.sight) {
-                    body2.notice(body1);                        console.log("noticing!  Plus, I'm already wandering!");
+                    body2.notice(body1);
 
                 }
                 
@@ -96,11 +120,11 @@ SIM = function (scope) {
         return collisions;
     }
     function tick() {
-        console.log("tick");
+        // console.log("tick");
         /*scope.ctx.clearRect(0, 0,
                             scope.config.width,
                             scope.config.height);*/
-        scope.ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+        scope.ctx.fillStyle = "rgba(255, 255, 255, 0.25)";
         scope.ctx.fillRect(0, 0, scope.config.width, scope.config.height);
         
         scope.stats.alive = 0;
@@ -125,9 +149,24 @@ SIM = function (scope) {
                     scope.stats.dead++;
                     break;
             }
+            if (scope.bodies[i].status === Human.ROTTED) continue;
             scope.bodies[i].draw(scope.ctx);
         }
         
+        // Draw stats.
+        // scope.ctx.globalCompositeOperation = "lighter";
+        scope.ctx_stats.clearRect(0, 0, scope.width, scope.height);
+        scope.ctx_stats.fillStyle = "#000";
+        scope.ctx_stats.textBaseline = "top";
+        scope.ctx_stats.font = "20pt Arial";
+        var xfont = 0, yfont = 0;
+        for(var stat in scope.stats) {
+            scope.ctx_stats.fillText(stat + ": " + scope.stats[stat], xfont, yfont);
+            yfont += 30;
+        }
+        scope.ctx_stats.globalCompositeOperation = "destination-over";
+        scope.ctx_stats.fillStyle = "rgba(255, 255, 255, 0.75)";
+        scope.ctx_stats.fillRect(0, 0, 150, yfont);
     }
     function toggleSim() {
         if( !scope.isRunning ) {
@@ -139,17 +178,19 @@ SIM = function (scope) {
     }
     
     scope.init = function () {
-        scope.canvas = document.getElementById("stage");
-        scope.width  = scope.config.width;
-        scope.height = scope.config.height;
-        scope.ctx    = scope.canvas.getContext("2d");
+        scope.canvas       = document.getElementById("stage");
+        scope.canvas_stats = document.getElementById("stage_stats");
+        scope.width        = scope.config.width;
+        scope.height       = scope.config.height;
+        scope.ctx          = scope.canvas.getContext("2d");
+        scope.ctx_stats    = scope.canvas_stats.getContext("2d");
         
         // Create test bodies.
         var x, y, r;
         var padding = 10;
         // Undead
         for(var i=0; i<1; i++) {
-            r = Math.randomInt(10, 15);
+            r = Math.randomInt(3, 5);
             x = randomX().clamp(r, scope.config.width  - r);
             y = randomY().clamp(r, scope.config.height - r);
             
@@ -159,8 +200,8 @@ SIM = function (scope) {
         }
         
         // Humans
-        for(i=0; i<30; i++) {
-            r = Math.randomInt(10, 15);
+        for(i=0; i<100; i++) {
+            r = Math.randomInt(3, 5);
             x = randomX().clamp(r, scope.config.width  - r);
             y = randomY().clamp(r, scope.config.height - r);
             
@@ -184,7 +225,7 @@ SIM = function (scope) {
         console.log("itrs: ", safetyCount);
         
         // Start / Stop sim.
-        scope.canvas.onclick = toggleSim;
+        scope.canvas_stats.onclick = toggleSim;
         // DEBUG CODE: Makes clicking thru iterations easy :)
         /*scope.canvas.onclick = function () {
             tick();
