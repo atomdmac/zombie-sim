@@ -26,8 +26,8 @@ Object.copy = function (obj) {
 
 // Thanks, Markus Amalthea Magnu of StackOverflow!
 // http://stackoverflow.com/questions/4550505/getting-random-value-from-an-array
-Array.prototype.random = function () {
-    return this[Math.floor(Math.random() * this.length)]
+Array.random = function (arr) {
+    return arr[Math.floor(Math.random() * arr.length)]
 };
 
 // ---------
