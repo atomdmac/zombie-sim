@@ -49,6 +49,7 @@ var Human = Body.extend({
         ctx.font = "normal 8pt Arial";
         ctx.fillStyle = "white";
         ctx.fillText(badges, this.x-this.radius, this.y);
+        */
     },
     
     // --------
