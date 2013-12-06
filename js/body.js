@@ -27,7 +27,7 @@ var Body = Class.extend({
         this.ax     = config.ax || 0;
         this.ay     = config.ay || 0;
         this.radius = config.radius || 1;
-        this.maxAcc = config.maxAcc || 5;
+        this.maxAcc = config.maxAcc || 8;
         this.maxSpeed = config.maxSpeed || 10;
     },
     
@@ -83,8 +83,8 @@ var Body = Class.extend({
     },
     
     accelerate: function (delta) {
-        //this.ax = this.ax.clamp(-this.maxAcc, this.maxAcc);
-        //this.ay = this.ay.clamp(-this.maxACc, this.maxAcc);
+        this.ax = this.ax.clamp(-this.maxAcc, this.maxAcc);
+        this.ay = this.ay.clamp(-this.maxAcc, this.maxAcc);
         
         this.x += this.ax * delta * delta
         this.y += this.ay * delta * delta;
