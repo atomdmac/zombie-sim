@@ -1,8 +1,8 @@
 SIM = function (scope) {
     scope = typeof scope === "object" ? scope : {};
     scope.config = {
-        width : 500,
-        height: 500
+        width : 700,
+        height: 700
     };
     
     scope.stats = {
@@ -13,6 +13,7 @@ SIM = function (scope) {
         collisions: 0
     }
     scope.bodies = [];
+    scope.selectedBody = false;
     scope.isRunning = false;
     scope.canvas = null;
     scope.ctx    = null;
@@ -158,20 +159,49 @@ SIM = function (scope) {
             scope.bodies[i].draw(scope.ctx);
         }
         
-        // Draw stats.
+        // Draw info
         // scope.ctx.globalCompositeOperation = "lighter";
         scope.ctx_stats.clearRect(0, 0, scope.width, scope.height);
         scope.ctx_stats.fillStyle = "#fff";
         scope.ctx_stats.textBaseline = "top";
         scope.ctx_stats.font = "20pt Arial";
-        var xfont = 0, yfont = 0;
-        for(var stat in scope.stats) {
+        var xfont = 0, yfont = 0, stat;
+        for(stat in scope.stats) {
             scope.ctx_stats.fillText(stat + ": " + scope.stats[stat], xfont, yfont);
             yfont += 30;
         }
         // scope.ctx_stats.globalCompositeOperation = "destination-over";
         // scope.ctx_stats.fillStyle = "rgba(255, 255, 255, 0.75)";
         // scope.ctx_stats.fillRect(0, 0, 150, yfont);
+        
+        // Draw selected body stats;
+        if (scope.selectedBody) {
+            
+            // Highlight selected body.
+            scope.ctx.strokeStyle = "#fff";
+            scope.ctx.lineWidth = 3;
+            scope.ctx.fillStyle = scope.selectedBody.color;
+            scope.ctx.beginPath();
+            scope.ctx.arc(scope.selectedBody.x, scope.selectedBody.y, scope.selectedBody.radius, 0, Math.PI*2, false);
+            scope.ctx.stroke();
+            
+            scope.ctx_stats.fillStyle = "rgb(200, 200, 255)";
+            scope.ctx_stats.textBaseline = "top";
+            scope.ctx_stats.font = "20pt Arial";
+            
+            scope.ctx_stats.fillText("status: " + scope.selectedBody.status, xfont, yfont);
+            yfont += 30;
+            
+            for(stat in scope.selectedBody.stats) {
+                scope.ctx_stats.fillText(stat + ": " + scope.selectedBody.stats[stat], xfont, yfont);
+                yfont += 30;
+            }
+            for(stat in scope.selectedBody.behavior) {
+                scope.ctx_stats.fillText(stat + ": " + scope.selectedBody.behavior[stat], xfont, yfont);
+                yfont += 30;
+            }
+        }
+        
     }
     function toggleSim() {
         if( !scope.isRunning ) {
@@ -182,11 +212,39 @@ SIM = function (scope) {
         scope.isRunning = !scope.isRunning;
     }
     
+    function onMouseClick(e) {
+        var cur = isOverBody(e);
+        if (cur) {
+            scope.selectedBody = cur;
+        }
+        toggleSim();
+    }
+    
+    function isOverBody(e) {
+        var arr = scope.bodies,
+            len = arr.length,
+            i   = 0;
+        var xm = e.clientX,
+            ym = e.clientY;
+        var cur, ret = [];
+        for(; i<len; i++) {
+            cur = arr[i];
+            if (xm < cur.x + cur.radius && xm > cur.x - cur.radius &&
+                ym < cur.y + cur.radius && ym > cur.y - cur.radius) {
+                return cur;
+            }
+        }
+        return false;
+    }
+    
     scope.init = function () {
-        scope.canvas       = document.getElementById("stage");
-        scope.canvas_stats = document.getElementById("stage_stats");
+        
         scope.width        = scope.config.width;
         scope.height       = scope.config.height;
+        scope.canvas       = document.getElementById("stage");
+        scope.canvas.width = scope.config.width;
+        scope.canvas.height = scope.config.height;
+        scope.canvas_stats = document.getElementById("stage_stats");
         scope.ctx          = scope.canvas.getContext("2d");
         scope.ctx_stats    = scope.canvas_stats.getContext("2d");
         
@@ -230,7 +288,7 @@ SIM = function (scope) {
         console.log("itrs: ", safetyCount);
         
         // Start / Stop sim.
-        scope.canvas_stats.onclick = toggleSim;
+        scope.canvas_stats.onclick = onMouseClick;
         // DEBUG CODE: Makes clicking thru iterations easy :)
         /*scope.canvas.onclick = function () {
             tick();
