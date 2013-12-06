@@ -9,6 +9,7 @@ SIM = function (scope) {
         alive: 0,
         undead: 0,
         dead: 0,
+        rotted: 0,
         collisions: 0
     }
     scope.bodies = [];
@@ -124,12 +125,13 @@ SIM = function (scope) {
         /*scope.ctx.clearRect(0, 0,
                             scope.config.width,
                             scope.config.height);*/
-        scope.ctx.fillStyle = "rgba(255, 255, 255, 0.25)";
+        scope.ctx.fillStyle = "rgba(20, 20, 20, 0.35)";
         scope.ctx.fillRect(0, 0, scope.config.width, scope.config.height);
         
         scope.stats.alive = 0;
         scope.stats.undead = 0;
         scope.stats.dead = 0;
+        scope.stats.rotted = 0;
         scope.stats.collisions = 0;
         
         var i, len = scope.bodies.length;
@@ -148,6 +150,9 @@ SIM = function (scope) {
                 case Human.DEAD:
                     scope.stats.dead++;
                     break;
+                case Human.ROTTED:
+                    scope.stats.dead++;
+                    scope.stats.rotted++;
             }
             if (scope.bodies[i].status === Human.ROTTED) continue;
             scope.bodies[i].draw(scope.ctx);
@@ -156,7 +161,7 @@ SIM = function (scope) {
         // Draw stats.
         // scope.ctx.globalCompositeOperation = "lighter";
         scope.ctx_stats.clearRect(0, 0, scope.width, scope.height);
-        scope.ctx_stats.fillStyle = "#000";
+        scope.ctx_stats.fillStyle = "#fff";
         scope.ctx_stats.textBaseline = "top";
         scope.ctx_stats.font = "20pt Arial";
         var xfont = 0, yfont = 0;
@@ -164,9 +169,9 @@ SIM = function (scope) {
             scope.ctx_stats.fillText(stat + ": " + scope.stats[stat], xfont, yfont);
             yfont += 30;
         }
-        scope.ctx_stats.globalCompositeOperation = "destination-over";
-        scope.ctx_stats.fillStyle = "rgba(255, 255, 255, 0.75)";
-        scope.ctx_stats.fillRect(0, 0, 150, yfont);
+        // scope.ctx_stats.globalCompositeOperation = "destination-over";
+        // scope.ctx_stats.fillStyle = "rgba(255, 255, 255, 0.75)";
+        // scope.ctx_stats.fillRect(0, 0, 150, yfont);
     }
     function toggleSim() {
         if( !scope.isRunning ) {
