@@ -66,11 +66,11 @@ var Human = Body.extend({
     notice: function (target) {
         this.behavior.notices = true;
         if (this.status == Human.ALIVE) {
-            if (target.status == Human.UNDEAD) {
+            if (target.status == Human.INFECTED) {
                 this.flee(target);
             }
         }
-        else if (this.status == Human.UNDEAD) {
+        else if (this.status == Human.INFECTED) {
             if (target.status == Human.ALIVE) {
                 this.seek(target);
             }
@@ -138,9 +138,9 @@ var Human = Body.extend({
                 this.color = "#74a8ad";
                 this.stats = Human.ALIVE_STATS;
                 break;
-            case Human.UNDEAD:
+            case Human.INFECTED:
                 this.color = "#ff7c7c";
-                this.stats = Human.UNDEAD_STATS;
+                this.stats = Human.INFECTED_STATS;
                 break;
             case Human.DEAD:
                 this.color = "#968d8d";
@@ -154,7 +154,7 @@ var Human = Body.extend({
 // Constants
 // ---------
 Human.ALIVE  = 0;
-Human.UNDEAD = 1;
+Human.INFECTED = 1;
 Human.DEAD   = 2;
 Human.ROTTED = 3;
 
@@ -168,7 +168,7 @@ Human.ALIVE_STATS = {
     "notices"  : false
 };
 
-Human.UNDEAD_STATS = {
+Human.INFECTED_STATS = {
     "sight"    : 70,
     "defense"  : 2,
     "attack"   : 10,

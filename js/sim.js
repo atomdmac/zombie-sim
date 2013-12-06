@@ -7,7 +7,7 @@ SIM = function (scope) {
     
     scope.stats = {
         alive: 0,
-        undead: 0,
+        infected: 0,
         dead: 0,
         rotted: 0,
         collisions: 0
@@ -112,8 +112,8 @@ SIM = function (scope) {
 
                 }
                 
-                /*if (body1.status == Human.UNDEAD && length < body1.stats.sight) {
-                    console.log("UNDEAD!");
+                /*if (body1.status == Human.INFECTED && length < body1.stats.sight) {
+                    console.log("INFECTED!");
                 }*/
             }
             if(!body1.behavior.seeking && !body1.behavior.fleeing) body1.wander();
@@ -129,7 +129,7 @@ SIM = function (scope) {
         scope.ctx.fillRect(0, 0, scope.config.width, scope.config.height);
         
         scope.stats.alive = 0;
-        scope.stats.undead = 0;
+        scope.stats.infected = 0;
         scope.stats.dead = 0;
         scope.stats.rotted = 0;
         scope.stats.collisions = 0;
@@ -144,8 +144,8 @@ SIM = function (scope) {
                 case Human.ALIVE:
                     scope.stats.alive++;
                     break;
-                case Human.UNDEAD:
-                    scope.stats.undead++;
+                case Human.INFECTED:
+                    scope.stats.infected++;
                     break;
                 case Human.DEAD:
                     scope.stats.dead++;
@@ -193,7 +193,7 @@ SIM = function (scope) {
         // Create test bodies.
         var x, y, r;
         var padding = 10;
-        // Undead
+        // Infected
         for(var i=0; i<1; i++) {
             r = Math.randomInt(3, 5);
             x = randomX().clamp(r, scope.config.width  - r);
@@ -201,7 +201,7 @@ SIM = function (scope) {
             
             // console.log(r, " ", x, " ", y);
             
-            scope.bodies.push(new Human({"x": x, "y": y, "radius":r, status: Human.UNDEAD}));
+            scope.bodies.push(new Human({"x": x, "y": y, "radius":r, status: Human.INFECTED}));
         }
         
         // Humans
