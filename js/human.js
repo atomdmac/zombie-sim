@@ -135,15 +135,15 @@ var Human = Body.extend({
         this.age = 0;
         switch (this.status) {
             case Human.ALIVE:
-                this.color = "green";
+                this.color = "#74a8ad";
                 this.stats = Human.ALIVE_STATS;
                 break;
             case Human.UNDEAD:
-                this.color = "red";
+                this.color = "#ff7c7c";
                 this.stats = Human.UNDEAD_STATS;
                 break;
             case Human.DEAD:
-                this.color = "#ccc";
+                this.color = "#968d8d";
                 this.stats = Human.DEAD_STATS;
                 break;
         }
