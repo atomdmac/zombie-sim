@@ -9,16 +9,18 @@ var Human = Body.extend({
         this.age      = typeof config.age === "number" ? config.age : 0;
         this.isTrans  = false;
         this.status   = config.status || Human.ALIVE;
-        this.applyStatus();
         
         this.stats    = Object.merge({
-            age: 0
+            age: 0,
+            age_status: 0
         }, this.stats);
         this.behavior = {
             "seeking": false,
             "fleeing": false,
             "wandering": false
         };
+        
+        this.applyStatus();
     },
     
     // ---------
@@ -27,6 +29,7 @@ var Human = Body.extend({
     tick: function () {
         // Happy birthday.
         this.stats.age++;
+        this.stats.age_status++;
         
         // No longer transitioning.
         this.isTrans = false;
@@ -144,7 +147,7 @@ var Human = Body.extend({
     },
     
     applyStatus: function () {
-        this.age = 0;
+        this.stats.age_status = 0;
         switch (this.status) {
             case Human.ALIVE:
                 this.color = "#74a8ad";
