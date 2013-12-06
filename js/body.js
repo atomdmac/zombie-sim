@@ -54,7 +54,7 @@ var Body = Class.extend({
     // Steering Behaviors
     // ---------
     flee: function (target) {
-        var xd = (target.x - target.x),
+        var xd = (this.x - target.x),
             yd = (this.y - target.y),
             l = Math.sqrt(xd*xd+yd*yd)
             x = xd / l,
