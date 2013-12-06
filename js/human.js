@@ -1,19 +1,24 @@
 var Human = Body.extend({
-    age: null,
     stats: null,
     status: null,
     behavior: null,
+    isTrans: null,
     
     init: function (config) {
         this._super(config);
-        this.age    = typeof config.age === "number" ? config.age : 0;
-        this.status = config.status || Human.ALIVE;
+        this.age      = typeof config.age === "number" ? config.age : 0;
+        this.isTrans  = false;
+        this.status   = config.status || Human.ALIVE;
+        this.applyStatus();
+        
+        this.stats    = Object.merge({
+            age: 0
+        }, this.stats);
         this.behavior = {
             "seeking": false,
             "fleeing": false,
             "wandering": false
         };
-        this.applyStatus();
     },
     
     // ---------
@@ -21,7 +26,10 @@ var Human = Body.extend({
     // ---------
     tick: function () {
         // Happy birthday.
-        this.age++;
+        this.stats.age++;
+        
+        // No longer transitioning.
+        this.isTrans = false;
         
         // Reset stats.
         this.behavior.notices = false;
@@ -37,7 +45,10 @@ var Human = Body.extend({
     },
     
     draw: function (ctx) {
+        var tmpClr = this.color;
+        if(this.isTrans) this.color = "#fff";
         this._super(ctx);
+        this.color = tmpClr;
         
         // Draw sight range.
         /*
@@ -128,6 +139,7 @@ var Human = Body.extend({
         if (this.status !== Human.DEAD) {
             this.status++;
         }
+        this.isTrans = true;
         this.applyStatus();
     },
     
@@ -136,15 +148,15 @@ var Human = Body.extend({
         switch (this.status) {
             case Human.ALIVE:
                 this.color = "#74a8ad";
-                this.stats = Human.ALIVE_STATS;
+                this.stats = Object.merge(this.stats, Human.ALIVE_STATS);
                 break;
             case Human.INFECTED:
                 this.color = "#ff7c7c";
-                this.stats = Human.INFECTED_STATS;
+                this.stats = Object.merge(this.stats, Human.INFECTED_STATS);
                 break;
             case Human.DEAD:
                 this.color = "#968d8d";
-                this.stats = Human.DEAD_STATS;
+                this.stats = Object.merge(this.stats, Human.DEAD_STATS);
                 break;
         }
     }
@@ -161,29 +173,17 @@ Human.ROTTED = 3;
 Human.ALIVE_STATS = {
     "sight"   : 100,
     "defense" : 8,
-    "attack"  : 8,
-    "seeking" : false,
-    "fleeing" : false,
-    "wandering": false,
-    "notices"  : false
+    "attack"  : 8
 };
 
 Human.INFECTED_STATS = {
     "sight"    : 70,
     "defense"  : 2,
-    "attack"   : 10,
-    "seeking"  : false,
-    "fleeing"  : false,
-    "wandering": false,
-    "notices"  : false
+    "attack"   : 10
 };
 
 Human.DEAD_STATS = {
     "sight"    : 0,
     "defense"  : 0,
-    "attack"   : 0,
-    "seeking"  : false,
-    "fleeing"  : false,
-    "wandering": false,
-    "notices"  : false
+    "attack"   : 0
 };
