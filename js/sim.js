@@ -239,14 +239,16 @@ SIM = function (scope) {
     
     scope.init = function () {
         
-        scope.width        = scope.config.width;
-        scope.height       = scope.config.height;
-        scope.canvas       = document.getElementById("stage");
-        scope.canvas.width = scope.config.width;
+        scope.width         = scope.config.width;
+        scope.height        = scope.config.height;
+        scope.canvas        = document.getElementById("stage");
+        scope.canvas.width  = scope.config.width;
         scope.canvas.height = scope.config.height;
-        scope.canvas_stats = document.getElementById("stage_stats");
-        scope.ctx          = scope.canvas.getContext("2d");
-        scope.ctx_stats    = scope.canvas_stats.getContext("2d");
+        scope.canvas_stats  = document.getElementById("stage_stats");
+        scope.canvas_stats.width  = scope.config.width;
+        scope.canvas_stats.height = scope.config.height;
+        scope.ctx           = scope.canvas.getContext("2d");
+        scope.ctx_stats     = scope.canvas_stats.getContext("2d");
         
         // Create test bodies.
         var x, y, r;
