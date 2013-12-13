@@ -12,7 +12,8 @@ var Human = Body.extend({
         
         this.stats    = Object.merge({
             age: 0,
-            age_status: 0
+            age_status: 0,
+            kills: 0,
         }, this.stats);
         this.behavior = {
             "seeking": false,
@@ -42,7 +43,7 @@ var Human = Body.extend({
         
         if (this.status < Human.DEAD) {
             this._super();
-        } else if (this.age > 1000) {
+        } else if (this.stats.age_status > 1000) {
             this.status = Human.ROTTED;
         }
     },
@@ -125,13 +126,18 @@ var Human = Body.extend({
             return;
         }
         var attack = Math.randomFloat(0, this.stats.attack);
-        target.defend(this, attack);
+        if( target.defend(this, attack) ) {
+            this.stats.kills++;
+        }
     },
     
     defend: function (attacker, strength) {
         var defense = Math.randomFloat(0, this.stats.defense);
         if (defense < strength) {
             this.die();
+            return false;
+        } else {
+            return true;
         }
     },
     
